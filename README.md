@@ -109,30 +109,85 @@ The main dependencies include:
 1. **WHU Building Dataset**: [Download here](http://study.rsgis.whu.edu.cn/pages/download/building_dataset.html)
 2. **SpaceNet Buildings Dataset V2**: [Download here](https://spacenet.ai/spacenet-buildings-dataset-v2/)
 
-### Directory Structure
+### WHU Building Dataset Structure
 
-Organize your datasets as follows:
+After downloading the WHU Building dataset, you'll find the following original structure:
+
+```
+WHU Building Dataset/
+├── train/
+│   ├── A/              # Aerial images (original RGB images)
+│   └── OUT/            # Ground truth masks
+├── val/
+│   ├── A/              # Aerial images
+│   └── OUT/            # Ground truth masks
+└── test/
+    ├── A/              # Aerial images
+    └── OUT/            # Ground truth masks
+```
+
+### Organizing the Dataset
+
+You need to reorganize the dataset to match the expected structure:
+
+**Step 1**: Create the proper directory structure:
+
+```bash
+mkdir -p data/whubuilding/train/images
+mkdir -p data/whubuilding/train/masks_origin
+mkdir -p data/whubuilding/train/masks
+mkdir -p data/whubuilding/val/images
+mkdir -p data/whubuilding/val/masks_origin
+mkdir -p data/whubuilding/val/masks
+mkdir -p data/whubuilding/test/images
+mkdir -p data/whubuilding/test/masks_origin
+mkdir -p data/whubuilding/test/masks
+```
+
+**Step 2**: Copy the files from the original dataset:
+
+```bash
+# For training set
+cp path/to/WHU_Building_Dataset/train/A/* data/whubuilding/train/images/
+cp path/to/WHU_Building_Dataset/train/OUT/* data/whubuilding/train/masks_origin/
+
+# For validation set
+cp path/to/WHU_Building_Dataset/val/A/* data/whubuilding/val/images/
+cp path/to/WHU_Building_Dataset/val/OUT/* data/whubuilding/val/masks_origin/
+
+# For test set
+cp path/to/WHU_Building_Dataset/test/A/* data/whubuilding/test/images/
+cp path/to/WHU_Building_Dataset/test/OUT/* data/whubuilding/test/masks_origin/
+```
+
+**Final structure should be**:
 
 ```
 data/
 ├── whubuilding/
 │   ├── train/
-│   │   ├── images/           # Original RGB images (.tif)
-│   │   ├── masks_origin/     # Original masks
-│   │   └── masks/            # Converted binary masks
+│   │   ├── images/           # Copied from A/ folder (.tif files)
+│   │   ├── masks_origin/     # Copied from OUT/ folder (.tif files)
+│   │   └── masks/            # Will be created by mask_convert.py
 │   ├── val/                  # Same structure as train
 │   ├── test/                 # Same structure as train
-│   └── train_val/            # Merged train and val (optional)
+│   └── train_val/            # Optional: merged train and val
 └── spacenet/
     └── [same structure as whubuilding]
 ```
 
 ### Mask Conversion
 
-If needed, convert masks to binary format using:
+The original masks from the OUT folder need to be converted to binary format. Run:
+
 ```bash
 python EViT/mask_convert.py
 ```
+
+This script will:
+- Read masks from `masks_origin/` folders
+- Convert them to binary masks (0 for background, 1 for buildings)
+- Save converted masks to `masks/` folders
 
 ## Usage
 
